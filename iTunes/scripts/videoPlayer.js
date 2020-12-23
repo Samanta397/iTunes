@@ -9,8 +9,9 @@ export const videoPlayerInit = () => {
 	const videoVolume = document.querySelector('.video-volume');
 	const videoFullscreen = document.querySelector('.video-fullscreen');		
 	const volumeDownIcon = document.querySelector('.volume-down-icon');
-	// const volumeOffIcon = document.querySelector('.volume-off-icon');
 	const volumeUpIcon = document.querySelector('.volume-up-icon');
+
+	let currentVolume = videoPlayer.volume;
 
 	const toggleIcon = () => {
 		if (videoPlayer.paused){
@@ -21,8 +22,6 @@ export const videoPlayerInit = () => {
 			videoButtonPlay.classList.add('fa-pause');
 		}
 	};
-
-
 
 	const togglePlay = (event) => {
 		event.preventDefault();
@@ -47,8 +46,6 @@ export const videoPlayerInit = () => {
 		videoPlayer.volume = valueVolume / 100;
 
 		toggleVolumeIcon();
-		
-		
 	};
 
 	const toggleVolumeIcon = () => {
@@ -60,6 +57,8 @@ export const videoPlayerInit = () => {
 			volumeDownIcon.classList.add('fa-volume-down');
 		}
 	};
+
+	
 
 	videoPlayer.addEventListener('click', togglePlay);
 	videoButtonPlay.addEventListener('click', togglePlay);
@@ -80,13 +79,9 @@ export const videoPlayerInit = () => {
 
 		let minuteTotal = Math.floor(duration / 60);
 		let secondsTotal = Math.floor(duration % 60);
-		//console.log(minutePassed, minuteTotal);
 
-		
 		videoTimePassed.textContent = `${addZero(minutePassed)}:${addZero(secondsPassed)}`;
 		videoTimeTotal.textContent = `${addZero(minuteTotal)}:${addZero(secondsTotal)}`;
-
-		
 	});
 
 	videoProgress.addEventListener('input', () => {
@@ -100,23 +95,40 @@ export const videoPlayerInit = () => {
 
 	videoPlayer.addEventListener('volumechange', () => {
 		videoVolume.value = Math.round(videoPlayer.volume * 100);
-		//	changeVolume();
-		
 	});
-
 
 	volumeDownIcon.addEventListener('click', () => {
-		videoPlayer.volume = 0;
-		//toggleVolumeIcon();
+		if(videoPlayer.volume){
+			currentVolume = videoPlayer.volume;
+			videoPlayer.volume = 0;
+		} else {
+			videoPlayer.volume = currentVolume;
+		}
+		
+		toggleVolumeIcon();
 	});
-
-	
 
 	changeValue();
 
+	videoFullscreen.addEventListener('click', () => {
+		console.log(videoPlayer);
+		videoPlayer.requestFullscreen();
+		
+	});
 
-	videoFullscreen.addEventListener('click', changeValue);
-	
+	videoPlayer.addEventListener('fullscreenchange', () => {
+		if(document.fullscreen){
+			videoPlayer.controls = true;
+		} else {
+			videoPlayer.controls = false;
+		}
+	});
 
+	//console.dir(videoPlayer);
+
+	videoPlayerInit.stop = () => {
+		videoPlayer.pause();
+		toggleIcon();
+	};
 };
 
